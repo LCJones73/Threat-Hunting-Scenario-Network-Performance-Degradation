@@ -46,29 +46,58 @@ Anything we could have done to prevent the thing we hunted for? Any way we could
 
 ### Timeline Summary and Findings:
 
-VM-MDE-Test-CJ has been internet facing for several days
+VM-MDE-Test-CJ was found failing several Connection Requests (Total = 23) against other hosts on the same network:
 
-DeviceInfo<BR>
-| where DeviceName == "vm-mde-test-cj"<BR>
-| where IsInternetFacing == true<BR>
-| order by Timestamp desc<BR>
+![InitialCode](https://github.com/user-attachments/assets/0a2f2dc5-d91d-47bd-bb13-6c048acf93aa)
 
-Last interfacing time: 2025-05-02T01:00:39.654423Z___
+The following results show what the above KQL code was able to discover:<BR><BR>
 
-Using KQL to check for any bad actors that may have been attempting to log into the target network:<BR><BR>
+![Initial Findings](https://github.com/user-attachments/assets/53db6895-d85b-4f19-9438-87470aca1d9f)
+
+Doing a scan on the suspected LocalIP 10.1.0.19, I can see what’s happening:<BR><BR>
+
+![Secondary Code](https://github.com/user-attachments/assets/686be94d-eab1-4547-9f52-2af22176f8bd)
+
+This search discovered the following results. These indicate this was a port scan. A port scanner is an application designed to probe a server or host for open ports:<BR><BR>
+
+![Secondary Findings](https://github.com/user-attachments/assets/63ef13ce-f7ce-44fb-979a-564f4e9cb0c4)
+
+You can see the LocalIP is scanning the RemoteIP and this is an obvious port scan as you observe the well known RemotePorts are scanned in sequential order starting with “8443”.
+
+![Deeper Code](https://github.com/user-attachments/assets/e4834ce4-b537-42c9-851e-6322a629925d)
+
+Ran the KQL code above specifically looking for a Timestamp, FileName and InitiatingProcessCommandLine and see what I can observe and discover:
+
+![Deeper Findings](https://github.com/user-attachments/assets/fbc3887a-f50c-4841-921f-abe23eb8fd3c)
+
+I noticed a powershell.exe script was launched, this script was called “portscan.ps1” at 2025-05-09T02:46:39.2819461Z. I logged into the suspect computer and observed the powershell script that was used to conduct the port scan.
+
+![Powershell Script](https://github.com/user-attachments/assets/0dcaa81f-7441-4ec0-8c18-5c15770d56e7)
+
+Going a step further to simulate a real event, I investigated who ran the script by adding AccountName after the InitiatingProcessCommandLine which gave the following results:
+
+![Final Findings](https://github.com/user-attachments/assets/943f4759-bb57-42e9-a2f4-a4c3def1ba12)
+
+You could confront the user and if they say they did not run the script, or know what you’re talking about. We can assume their device is compromised by Malware. So, we would need to quarantine the computer and bring it offline until remediation can be completed.
+
+Remediation Steps:
+In Microsoft Defender, we would go to “Device Inventory” 
+Search our compromised computer, in this case “VM-MDE-Test-CJ” 
+We would then click on the 3 dots at the top right
+Select “Run Antivirus Scan”
+Select “Isolate Device”
+Put in a ticket to have it re-imaged/rebuilt
+
+There is more that can be done and in a real world we would use the DeviceFileEvents table to see if we can discover where the “portscan.ps1” file came from, or when it was created.You can also cross reference with the MITRE ATT&CK Framework to discover TTPs.
+
+Example:
+T1059.001: Command and Scripting Interpreter: PowerShell
+T1040: Network Sniffing
+T1046: Network Service Scanning
+T1075: Pass the Hash (Potential Lateral Movement)
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/119f2014-ba96-4bc0-b010-4cae58452298" alt="Description" width="800"/>
-</p><BR>
-
-The following results show that none of the attempted logins were suspicious login attempts after exploring the TTP of the MITRE ATT&CK Framework. It is clear from my investigation that no <strong>T1110 Brute Force (MITRE ATT&CK Framework)</strong> logins were attempted.<BR><BR>
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/f500c383-c0a5-4113-a0e0-02ff01d4279c" alt="Description" width="800"/>
-</p><BR><BR>
-
-<p align="center">
-  <strong>That wraps up Threat Hunting Scenario: Investigating Internet Facing VM's</strong>
+  <strong>This wraps up Threat Hunting Scenario: Network Performance Degradation</strong>
 </p>
 
 <p align="center">
