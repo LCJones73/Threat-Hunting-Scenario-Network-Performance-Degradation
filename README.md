@@ -1,5 +1,11 @@
 # Threat Hunting Scenario Network Performance Degradation
-The server team has noticed a significant network performance degradation on some of their older devices attached to the network.
+## 10:15 AM – Trouble Brews<BR>
+It’s a busy Wednesday at a financial services company. Systems are stable, patching was completed overnight, and the server team is catching up on backlogs. The server team notices an unusual submission of help desk tickets on end user system performance being unusually slow. The first question the server team is trying to tackle is if the network is under attack.
+
+## 11:00 AM - The Call<BR>
+After some investigation, they notice there is significant network performance degregation. Specifically with older devices on the 10.0.0.0/16 Network. The server team reaches out to the Security Operations Center (SOC) to get some help identifying if there is an attack happening.
+
+Now that the stage is set, let's work through this scenario and see what we as the SOC Analyst discovers.
 
 ### - Preparation
 > [!NOTE]
