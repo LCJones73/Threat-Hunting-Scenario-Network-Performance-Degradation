@@ -1,4 +1,7 @@
 # Threat Hunting Scenario Network Performance Degradation
+
+## It's a busy morning at CypherT3ch and the server team is catching wind that there is what appears to be network degredation
+
 ## 10:15 AM – Trouble Brews<BR>
 It’s a busy Wednesday at a financial services company. Systems are stable, patching was completed overnight, and the server team is catching up on backlogs. The server team notices an unusual submission of help desk tickets on end user system performance being unusually slow. The first question the server team is trying to tackle is if the network is under attack.
 
